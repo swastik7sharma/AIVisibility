@@ -2,6 +2,12 @@
 
 A comprehensive Django application that tracks brand visibility in AI-generated answers across ChatGPT, Claude, and Gemini.
 
+## 📊 System Workflow
+
+![AI Visibility Tracker Workflow](workflow_diagram.png)
+
+The system consists of three sequential modules that work together to analyze your brand's visibility in AI-generated responses.
+
 ## 🎯 What This Does
 
 When users ask AI assistants like ChatGPT "What's the best CRM for startups?", which brands get mentioned? This tool:
