@@ -64,11 +64,7 @@ Users can still select which models to test in Module 2:
 ## 🎯 Your Current Configuration
 
 Your `.env` file has all three API keys:
-```env
-GEMINI_API_KEY=AIzaSyCfnvpA9J55ypEBLZ6qAzL6v49VUCgPT8Q  ✅ Active
-CLAUDE_API_KEY=sk-ant-api03-Qw19GwgMYRHCmmPxH...        ✅ Available
-OPENAI_API_KEY=sk-proj-QcxWps19WLS_LhXKAVhIiNL...      ⚠️ No credits
-```
+
 
 **Current behavior**:
 - Gemini is used for all reasoning/analysis tasks
