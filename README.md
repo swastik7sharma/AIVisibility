@@ -4,7 +4,7 @@ A comprehensive Django application that tracks brand visibility in AI-generated 
 
 ## 📊 System Workflow
 
-![AI Visibility Tracker Workflow](workflow_diagram.png)
+![AI Visibility Tracker Workflow](Workflow.png)
 
 The system consists of three sequential modules that work together to analyze your brand's visibility in AI-generated responses.
 
