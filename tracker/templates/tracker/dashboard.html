@@ -1,0 +1,58 @@
+{% extends 'tracker/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h2>My Visibility Checks</h2>
+    <a href="{% url 'create_project' %}" class="btn btn-success">+ New Check</a>
+</div>
+
+{% if projects %}
+<table>
+    <thead>
+        <tr>
+            <th>Company</th>
+            <th>Created</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for project in projects %}
+        <tr>
+            <td>
+                <strong>{{ project.company_name }}</strong><br>
+                <small>{{ project.area_of_work }}</small>
+            </td>
+            <td>{{ project.created_at|date:"M d, Y" }}</td>
+            <td>
+                <span class="status-badge status-{{ project.status }}">
+                    {{ project.get_status_display }}
+                </span>
+            </td>
+            <td>
+                {% if project.status == 'completed' %}
+                    <a href="{% url 'view_report' project.id %}" class="btn">View Report</a>
+                {% elif project.status == 'validating' %}
+                    <a href="{% url 'validate_project' project.id %}" class="btn">Continue</a>
+                {% elif project.status == 'checking' or project.status == 'analyzing' %}
+                    <a href="{% url 'check_status' project.id %}" class="btn btn-secondary">Check Status</a>
+                {% else %}
+                    <a href="{% url 'validate_project' project.id %}" class="btn btn-secondary">Resume</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="card" style="text-align: center; padding: 3rem;">
+    <h3>No visibility checks yet</h3>
+    <p>Create your first check to start tracking AI visibility</p>
+    <a href="{% url 'create_project' %}" class="btn btn-success" style="margin-top: 1rem;">
+        Create First Check
+    </a>
+</div>
+{% endif %}
+{% endblock %}

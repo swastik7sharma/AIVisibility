@@ -1,0 +1,38 @@
+{% extends 'tracker/base.html' %}
+
+{% block title %}Welcome - AI Visibility Tracker{% endblock %}
+
+{% block content %}
+<div style="text-align: center; padding: 4rem 0;">
+    <h1 style="font-size: 3rem; margin-bottom: 1rem; color: #2c3e50;">
+        AI Visibility Tracker
+    </h1>
+    <p style="font-size: 1.25rem; color: #7f8c8d; margin-bottom: 2rem;">
+        Track your brand's visibility in AI-generated answers
+    </p>
+    
+    <div style="margin-top: 3rem;">
+        <a href="{% url 'signup' %}" class="btn btn-success" style="margin: 0 0.5rem; font-size: 1.1rem;">
+            Get Started
+        </a>
+        <a href="{% url 'login' %}" class="btn" style="margin: 0 0.5rem; font-size: 1.1rem;">
+            Login
+        </a>
+    </div>
+    
+    <div class="card" style="margin-top: 4rem; text-align: left;">
+        <h2>What is AI Visibility?</h2>
+        <p>When someone asks ChatGPT, Claude, or Gemini about products in your category, 
+           which brands get mentioned? How often? In what position? With what sentiment?</p>
+        
+        <h3 style="margin-top: 2rem;">This tool helps you:</h3>
+        <ul style="margin-left: 2rem; margin-top: 1rem;">
+            <li>✅ Discover which competitors dominate AI recommendations</li>
+            <li>✅ Measure your visibility across multiple AI models</li>
+            <li>✅ Identify content and messaging gaps</li>
+            <li>✅ Get actionable recommendations to improve visibility</li>
+            <li>✅ Track competitor positioning strategies</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

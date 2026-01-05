@@ -1,0 +1,46 @@
+{% extends 'tracker/base.html' %}
+
+{% block title %}Select Models - {{ project.company_name }}{% endblock %}
+
+{% block content %}
+<h2>Step 3: Select AI Models</h2>
+
+<div class="card">
+    <p>Choose which AI models to query. Each model will be tested with all selected prompts.</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div style="margin: 2rem 0;">
+            {% for model in models %}
+            <div class="checkbox-group" style="padding: 1rem; background: #f8f9fa; margin-bottom: 0.5rem; border-radius: 4px;">
+                <input type="checkbox" id="model_{{ model.name }}" 
+                       name="model_{{ model.name }}" checked>
+                <label for="model_{{ model.name }}">
+                    <strong>{{ model.display_name }}</strong>
+                    <span style="color: #7f8c8d;"> (Coverage Weight: {{ model.weight }})</span>
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div style="text-align: center;">
+            <a href="{% url 'validate_project' project.id %}" class="btn btn-secondary">
+                ← Back
+            </a>
+            <button type="submit" class="btn btn-success" style="font-size: 1.1rem;">
+                Proceed to Execution →
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="card" style="background: #e3f2fd; border-left: 4px solid #2196f3;">
+    <h3>Model Weights Explained</h3>
+    <ul style="margin-left: 1.5rem; margin-top: 1rem;">
+        <li><strong>ChatGPT (1.0):</strong> Most widely used, highest weight</li>
+        <li><strong>Claude (0.9):</strong> Growing popularity</li>
+        <li><strong>Gemini (0.8):</strong> Emerging platform</li>
+    </ul>
+</div>
+{% endblock %}

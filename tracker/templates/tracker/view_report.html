@@ -1,0 +1,223 @@
+{% extends 'tracker/base.html' %}
+
+{% block title %}Report - {{ project.company_name }}{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h2>AI Visibility Report: {{ project.company_name }}</h2>
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+</div>
+
+<!-- VISIBILITY SCORES LEADERBOARD -->
+<div class="card">
+    <h3>🏆 Visibility Leaderboard</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Brand</th>
+                <th>Visibility Score</th>
+                <th>Mentions</th>
+                <th>Prompts</th>
+                <th>Frequency</th>
+                <th>Prominence</th>
+                <th>Sentiment</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for score in scores %}
+            <tr style="{% if score.is_main_brand %}background: #fff3e0;{% endif %}">
+                <td><strong>{{ forloop.counter }}</strong></td>
+                <td>
+                    <strong>{{ score.brand_name }}</strong>
+                    {% if score.is_main_brand %}
+                        <span style="color: #f57c00;">👤 You</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <strong style="font-size: 1.2rem; color: #2196f3;">
+                        {{ score.normalized_score|floatformat:1 }}%
+                    </strong>
+                </td>
+                <td>{{ score.total_mentions }}</td>
+                <td>{{ score.prompts_appeared_in }}</td>
+                <td>{{ score.frequency_score|floatformat:2 }}</td>
+                <td>{{ score.prominence_score|floatformat:3 }}</td>
+                <td>{{ score.sentiment_score|floatformat:3 }}</td>
+                <td>
+                    {% if score.competitor %}
+                        <a href="{% url 'competitor_impersonation' project.id score.competitor.id %}" 
+                           class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
+                            Impersonate
+                        </a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- COMPETITOR COMPARISON -->
+<div class="card">
+    <h3>📊 Competitor Analysis</h3>
+    {% if report.competitor_comparison.gap_analysis %}
+    <div style="background: #ffebee; padding: 1rem; border-radius: 4px; margin-bottom: 1rem;">
+        <h4>Gap Analysis</h4>
+        <p><strong>Score Gap:</strong> {{ report.competitor_comparison.gap_analysis.score_gap }}%</p>
+        <p><strong>Frequency Gap:</strong> {{ report.competitor_comparison.gap_analysis.frequency_gap }}%</p>
+        <p><strong>Prominence Gap:</strong> {{ report.competitor_comparison.gap_analysis.prominence_gap }}</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- PROMPT-WISE ANALYSIS -->
+<div class="card">
+    <h3>🎯 Prompt-Wise Performance</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Prompt</th>
+                <th>Winner</th>
+                <th>Your Brand Present?</th>
+                <th>Your Position</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in report.prompt_wise_analysis.prompts %}
+            <tr>
+                <td>{{ item.prompt }}</td>
+                <td><strong>{{ item.winner }}</strong></td>
+                <td>
+                    {% if item.main_brand_present %}
+                        <span style="color: #27ae60;">✓ Yes</span>
+                    {% else %}
+                        <span style="color: #e74c3c;">✗ No</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if item.main_brand_position %}
+                        #{{ item.main_brand_position }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- MODEL-WISE ANALYSIS -->
+<div class="card">
+    <h3>🤖 Model-Wise Performance</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>AI Model</th>
+                <th>Top Brand</th>
+                <th>Your Avg Position</th>
+                <th>Your Mentions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in report.model_wise_analysis.models %}
+            <tr>
+                <td><strong>{{ item.model }}</strong></td>
+                <td>{{ item.top_brand }}</td>
+                <td>
+                    {% if item.main_brand_avg_position %}
+                        #{{ item.main_brand_avg_position }}
+                    {% else %}
+                        Not mentioned
+                    {% endif %}
+                </td>
+                <td>{{ item.main_brand_mentions }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- NEGATIVE SENTIMENT -->
+{% if report.negative_sentiment_analysis.total_negative > 0 %}
+<div class="card" style="border-left: 4px solid #e74c3c;">
+    <h3>⚠️ Negative Sentiment Analysis</h3>
+    <p><strong>Total Negative Mentions:</strong> {{ report.negative_sentiment_analysis.total_negative }}</p>
+    
+    {% for instance in report.negative_sentiment_analysis.instances %}
+    <div style="background: #ffebee; padding: 1rem; margin: 1rem 0; border-radius: 4px;">
+        <p><strong>Brand:</strong> {{ instance.brand }}</p>
+        <p><strong>Prompt:</strong> {{ instance.prompt }}</p>
+        <p><strong>Model:</strong> {{ instance.model }}</p>
+        <p><strong>Context:</strong> "{{ instance.context }}"</p>
+        <p><strong>Reason:</strong> {{ instance.reasoning }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- INSIGHTS -->
+<div class="card">
+    <h3>💡 Why Competitors Win</h3>
+    <p>{{ report.why_competitors_win }}</p>
+</div>
+
+<div class="card">
+    <h3>📝 Content Gaps</h3>
+    <p>{{ report.content_gaps }}</p>
+</div>
+
+<div class="card">
+    <h3>💬 Messaging Gaps</h3>
+    <p>{{ report.messaging_gaps }}</p>
+</div>
+
+<div class="card">
+    <h3>🎯 Positioning Weaknesses</h3>
+    <p>{{ report.positioning_weaknesses }}</p>
+</div>
+
+<!-- ACTION PLAN -->
+<div class="card" style="background: #e8f5e9; border-left: 4px solid #4caf50;">
+    <h3>✅ Action Plan</h3>
+    
+    <h4>Content Ideas:</h4>
+    <ul>
+        {% for idea in report.content_ideas %}
+        <li>{{ idea }}</li>
+        {% endfor %}
+    </ul>
+    
+    <h4 style="margin-top: 1.5rem;">SEO/PR Recommendations:</h4>
+    <ul>
+        {% for rec in report.seo_pr_recommendations %}
+        <li>{{ rec }}</li>
+        {% endfor %}
+    </ul>
+    
+    <h4 style="margin-top: 1.5rem;">Messaging Improvements:</h4>
+    <ul>
+        {% for improvement in report.messaging_improvements %}
+        <li>{{ improvement }}</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<!-- RESEARCH SOURCES -->
+{% if report.research_sources %}
+<div class="card">
+    <h3>🔗 Research Sources Found</h3>
+    <ul>
+        {% for source in report.research_sources %}
+        <li><a href="{{ source }}" target="_blank">{{ source }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<div style="text-align: center; margin-top: 2rem;">
+    <a href="{% url 'dashboard' %}" class="btn">Back to Dashboard</a>
+</div>
+{% endblock %}

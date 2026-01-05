@@ -1,0 +1,68 @@
+{% extends 'tracker/base.html' %}
+
+{% block title %}Status - {{ project.company_name }}{% endblock %}
+
+{% block content %}
+<h2>Visibility Check Status</h2>
+
+<div class="card" style="text-align: center;">
+    <h3>{{ project.company_name }}</h3>
+    
+    <div style="margin: 2rem 0;">
+        <span class="status-badge status-{{ project.status }}" style="font-size: 1.1rem;">
+            {{ project.get_status_display }}
+        </span>
+    </div>
+    
+    <div id="status-message">
+        {% if project.status == 'checking' %}
+            <p>🔍 Querying AI models and extracting brand mentions...</p>
+        {% elif project.status == 'analyzing' %}
+            <p>🧠 Analyzing data and generating insights...</p>
+        {% elif project.status == 'completed' %}
+            <p style="color: #27ae60;">✅ Analysis complete!</p>
+            <a href="{% url 'view_report' project.id %}" class="btn btn-success" style="margin-top: 1rem;">
+                View Report
+            </a>
+        {% elif project.status == 'failed' %}
+            <p style="color: #e74c3c;">❌ Check failed. Please try again or contact support.</p>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary" style="margin-top: 1rem;">
+                Back to Dashboard
+            </a>
+        {% else %}
+            <p>⏳ Processing...</p>
+        {% endif %}
+    </div>
+    
+    {% if project.status != 'completed' and project.status != 'failed' %}
+    <div class="loading" style="margin-top: 2rem;"></div>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h3>What's happening:</h3>
+    <ol style="margin-left: 1.5rem; margin-top: 1rem;">
+        <li>✅ Company analyzed and competitors identified</li>
+        <li>✅ Prompts generated and validated</li>
+        <li>{{ "✅" if project.status in ["analyzing", "completed"] else "⏳" }} Querying AI models (Module 2)</li>
+        <li>{{ "✅" if project.status == "completed" else "⏳" }} Generating insights and recommendations (Module 3)</li>
+    </ol>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if project.status != 'completed' and project.status != 'failed' %}
+<script>
+    // Poll for status updates every 5 seconds
+    setInterval(function() {
+        fetch('{% url "api_project_status" project.id %}')
+            .then(response => response.json())
+            .then(data => {
+                if (data.is_complete || data.is_failed) {
+                    location.reload();
+                }
+            });
+    }, 5000);
+</script>
+{% endif %}
+{% endblock %}

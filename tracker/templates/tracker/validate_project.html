@@ -1,0 +1,101 @@
+{% extends 'tracker/base.html' %}
+
+{% block title %}Validate - {{ project.company_name }}{% endblock %}
+
+{% block content %}
+<h2>Step 2: Validate & Customize</h2>
+
+<div class="card">
+    <h3>Refined Company Summary</h3>
+    {% if project.refined_summary %}
+        <p style="background: #e3f2fd; padding: 1rem; border-radius: 4px; margin-top: 1rem;">
+            {{ project.refined_summary }}
+        </p>
+    {% else %}
+        <p style="color: #7f8c8d; font-style: italic;">AI is analyzing your company...</p>
+    {% endif %}
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    
+    {% if project.refined_summary %}
+    <div class="card">
+        <div class="form-group">
+            <label for="refined_summary">Edit Company Summary (optional)</label>
+            <textarea id="refined_summary" name="refined_summary">{{ project.refined_summary }}</textarea>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="card">
+        <h3>Competitors</h3>
+        <p>Select competitors to track. You can remove suggestions or add your own.</p>
+        
+        {% if competitors %}
+            {% for competitor in competitors %}
+            <div class="checkbox-group">
+                <input type="checkbox" id="competitor_{{ competitor.id }}" 
+                       name="competitor_{{ competitor.id }}" checked>
+                <label for="competitor_{{ competitor.id }}">
+                    <strong>{{ competitor.name }}</strong>
+                    {% if competitor.description %}
+                        <br><small>{{ competitor.description }}</small>
+                    {% endif %}
+                </label>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="color: #7f8c8d; font-style: italic;">Discovering competitors...</p>
+        {% endif %}
+        
+        <div class="form-group" style="margin-top: 1.5rem;">
+            <label for="custom_competitors">Add Custom Competitors (one per line)</label>
+            <textarea id="custom_competitors" name="custom_competitors" 
+                      placeholder="CompetitorName1&#10;CompetitorName2"></textarea>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3>AI-Generated Prompts</h3>
+        <p>Select which prompts to test. These are realistic questions users might ask AI.</p>
+        
+        {% if prompts %}
+            {% for prompt in prompts %}
+            <div class="checkbox-group">
+                <input type="checkbox" id="prompt_{{ prompt.id }}" 
+                       name="prompt_{{ prompt.id }}" checked>
+                <label for="prompt_{{ prompt.id }}">
+                    {{ prompt.text }}
+                </label>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="color: #7f8c8d; font-style: italic;">Generating prompts...</p>
+        {% endif %}
+        
+        <div class="form-group" style="margin-top: 1.5rem;">
+            <label for="custom_prompts">Add Custom Prompts (one per line)</label>
+            <textarea id="custom_prompts" name="custom_prompts" 
+                      placeholder="What's the best CRM for startups?&#10;Compare HubSpot and Salesforce"></textarea>
+        </div>
+    </div>
+    
+    {% if competitors and prompts %}
+    <div style="text-align: center;">
+        <button type="submit" class="btn btn-success" style="font-size: 1.1rem;">
+            Continue to Model Selection →
+        </button>
+    </div>
+    {% else %}
+    <div class="card" style="text-align: center; background: #fff3cd;">
+        <p>⏳ AI is still working on competitor discovery and prompt generation...</p>
+        <p style="margin-top: 0.5rem;">
+            <a href="{% url 'validate_project' project.id %}" class="btn btn-secondary">
+                Refresh Page
+            </a>
+        </p>
+    </div>
+    {% endif %}
+</form>
+{% endblock %}

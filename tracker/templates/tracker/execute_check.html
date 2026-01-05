@@ -1,0 +1,51 @@
+{% extends 'tracker/base.html' %}
+
+{% block title %}Execute Check - {{ project.company_name }}{% endblock %}
+
+{% block content %}
+<h2>Ready to Execute Visibility Check</h2>
+
+<div class="card">
+    <h3>Summary</h3>
+    <table style="border: none;">
+        <tr>
+            <td><strong>Company:</strong></td>
+            <td>{{ project.company_name }}</td>
+        </tr>
+        <tr>
+            <td><strong>Selected Prompts:</strong></td>
+            <td>{{ selected_prompts }}</td>
+        </tr>
+        <tr>
+            <td><strong>Selected Models:</strong></td>
+            <td>{{ selected_models }}</td>
+        </tr>
+        <tr>
+            <td><strong>Total API Calls:</strong></td>
+            <td>{{ total_queries }}</td>
+        </tr>
+    </table>
+</div>
+
+<div class="card" style="background: #fff3e0; border-left: 4px solid #ff9800;">
+    <h3>⚠️ Important Notes</h3>
+    <ul style="margin-left: 1.5rem; margin-top: 1rem;">
+        <li>This will make {{ total_queries }} API calls to AI models</li>
+        <li>Process may take 5-15 minutes depending on volume</li>
+        <li>Errors are handled gracefully with retry logic</li>
+        <li>You can close this tab - progress is saved</li>
+    </ul>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    <div style="text-align: center;">
+        <a href="{% url 'select_models' project.id %}" class="btn btn-secondary">
+            ← Back
+        </a>
+        <button type="submit" class="btn btn-success" style="font-size: 1.1rem;">
+            🚀 Start Visibility Check
+        </button>
+    </div>
+</form>
+{% endblock %}
